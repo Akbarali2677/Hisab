@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>گھر کا حساب</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B5532A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#F6F2EC; --surface:#FFFFFF; --ink:#2A2118; --muted:#6F6257; --line:#E4DACD;
+  --accent:#B5532A; --accent-ink:#FFFFFF; --in:#2E7D4F; --out:#B3392F; --warn:#9A6A00; --soft:#F5E6DC;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#17120E; --surface:#221B15; --ink:#F2EAE0; --muted:#A99C8E; --line:#3A3027;
+    --accent:#E08A5E; --accent-ink:#2A1408; --in:#5BC48A; --out:#F07A6E; --warn:#E5B73B; --soft:#33241B;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",Tahoma,system-ui,sans-serif;font-size:17px;line-height:1.7}
+body{padding-bottom:84px}
+.wrap{max-width:560px;margin:0 auto;padding:14px 14px 20px}
+h1{font-size:22px;margin:0}
+h2{font-size:18px;margin:20px 0 8px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.month{display:flex;align-items:center;gap:6px}
+.month button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:18px}
+.month input{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:6px 8px;font:inherit;font-size:15px;width:150px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:18px;padding:18px 18px 16px;margin-bottom:12px}
+.hero .lbl{font-size:15px;opacity:.92}
+.hero .big{font-size:40px;font-weight:700;line-height:1.2;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.hero .sub{display:flex;gap:22px;margin-top:10px;font-size:15px}
+.hero .sub b{display:block;font-size:20px;direction:ltr;text-align:right}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.num{direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums;font-weight:600}
+.in{color:var(--in)} .out{color:var(--out)} .warn{color:var(--warn)} .muted{color:var(--muted);font-size:14px}
+.bar{height:9px;background:var(--soft);border-radius:6px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:6px}
+.bar i.over{background:var(--out)}
+.bar i.good{background:var(--in)}
+.seg{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.seg button{flex:1;padding:10px;border:0;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
+.seg button.on{background:var(--accent);color:var(--accent-ink);font-weight:700}
+label{display:block;font-size:15px;color:var(--muted);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:17px}
+input.amt{font-size:26px;font-weight:700;direction:ltr;text-align:right}
+textarea{font-size:13px;direction:ltr;text-align:left;font-family:monospace}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{padding:8px 12px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:15px}
+.chips button.on{background:var(--soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+.btn{width:100%;margin-top:12px;padding:13px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font:inherit;font-size:18px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);font-size:16px;padding:10px}
+.del{border:0;background:transparent;color:var(--out);font:inherit;font-size:15px;padding:6px 8px}
+.link{border:0;background:transparent;color:var(--accent);font:inherit;font-size:16px;padding:6px 4px;font-weight:700}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:var(--ink);font:inherit;text-align:right;padding:6px 0}
+.deal{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:var(--surface)}
+.deal.open{border-color:var(--accent)}
+.empty{text-align:center;color:var(--muted);padding:18px 6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pr{display:grid;grid-template-columns:1fr 110px auto;gap:8px;align-items:center;margin-bottom:8px}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:10}
+nav button{flex:1;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;padding:10px 2px 8px;display:flex;flex-direction:column;align-items:center}
+nav button .ic{font-size:20px;line-height:1.2}
+nav button.on{color:var(--accent);font-weight:700}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:15px;z-index:20;white-space:nowrap}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<nav id="nav"></nav>
+<div id="toast" class="toast" style="display:none"></div>
+
+<script>
+const EXP=['ماہانہ سودا','آٹا، دودھ، روزمرہ','بچوں کے لیے پھل / ٹافی','موبائل پیکج','موٹر سائیکل کا تیل','موٹر سائیکل کے دیگر خرچ (ٹیوننگ وغیرہ)','بجلی، گیس، نیٹ','علاج','کپڑے','دیگر'];
+const INC=['تنخواہ','دوسری آمدن','دیگر'];
+const POCKET='جیب خرچ';
+const MONTHS=['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر'];
+const KEY='ghar-hisab-v1';
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const fmt=n=>Math.round(n||0).toLocaleString('en-IN');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+function defaultState(){return {tx:[],people:[],budgets:{},fund:{total:0,monthly:0,start:''},loans:[]}}
+let state=defaultState();
+let ui={tab:'home',month:today().slice(0,7),addType:'exp',cat:EXP[0],loanDir:'owe',openLoan:null,confirm:null};
+
+const S=window.storage
+  ?{get:k=>window.storage.get(k),set:(k,v)=>window.storage.set(k,v)}
+  :{get:async k=>{const v=localStorage.getItem(k);return v==null?null:{value:v}},set:async(k,v)=>{localStorage.setItem(k,v)}};
+async function load(){
+  try{const r=await S.get(KEY);if(r&&r.value)state=Object.assign(defaultState(),JSON.parse(r.value))}catch(e){}
+  render();
+}
+async function save(){try{await S.set(KEY,JSON.stringify(state))}catch(e){}}
+function toast(msg,label,fn){
+  const t=document.getElementById('toast');t.innerHTML='';t.append(msg);t.style.display='block';
+  if(label){
+    const b=document.createElement('button');b.textContent=label;
+    b.style.cssText='margin-inline-start:14px;border:0;background:transparent;color:inherit;font:inherit;font-weight:700;text-decoration:underline;padding:4px 6px';
+    b.onclick=()=>{fn();t.style.display='none'};t.append(b);
+  }
+  clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',label?6000:1700);
+}
+
+/* ---------- calculations ---------- */
+const shiftMonth=(m,n)=>{const [y,mo]=m.split('-').map(Number);const d=new Date(y,mo-1+n,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
+const daysIn=ym=>{const [y,m]=ym.split('-').map(Number);return new Date(y,m,0).getDate()};
+function rateOn(p,date){let r=0;for(const x of p.rates){if(x.from<=date)r=x.daily}return r}
+function curRate(p){return p.rates.length?p.rates[p.rates.length-1].daily:0}
+function pocketMonth(p,ym){
+  const nowYM=today().slice(0,7);
+  const last=ym<nowYM?daysIn(ym):ym===nowYM?Number(today().slice(8,10)):0;
+  let sum=0;
+  for(let d=1;d<=last;d++) sum+=rateOn(p,ym+'-'+String(d).padStart(2,'0'));
+  return sum;
+}
+const pocketTotal=ym=>state.people.reduce((a,p)=>a+pocketMonth(p,ym),0);
+const monthTx=m=>state.tx.filter(t=>t.date.slice(0,7)===m);
+function sumBy(list,type){const o={};list.filter(t=>t.type===type).forEach(t=>o[t.cat]=(o[t.cat]||0)+t.amount);return o}
+function catTotals(ym){
+  const o=sumBy(monthTx(ym),'exp');
+  const pk=pocketTotal(ym);if(pk>0)o[POCKET]=pk;
+  return o;
+}
+function fundStats(){
+  const f=state.fund;
+  if(!(f.total>0)||!(f.monthly>0)) return null;
+  const n=Math.ceil(f.total/f.monthly);
+  let el=0;
+  if(f.start){
+    const [sy,sm]=f.start.split('-').map(Number);const now=new Date();
+    el=Math.max(0,(now.getFullYear()-sy)*12+(now.getMonth()+1-sm)+1);
+  }
+  el=Math.min(n,el);
+  const paid=Math.min(f.total,el*f.monthly);
+  return {n,el,paid,left:f.total-paid,monthsLeft:n-el};
+}
+function loanLeft(l){return l.amount-(l.pays||[]).reduce((a,p)=>a+p.amount,0)}
+function loanTotals(){
+  let owe=0,lent=0;
+  state.loans.forEach(l=>{const r=Math.max(0,loanLeft(l));if(l.dir==='owe')owe+=r;else lent+=r});
+  return {owe,lent};
+}
+
+/* ---------- views ---------- */
+function monthBar(title){
+  return `<div class="top"><h1>${title}</h1>
+  <div class="month">
+    <button data-a="mprev" aria-label="پچھلا مہینہ">›</button>
+    <input type="month" value="${ui.month}" data-a="mset" aria-label="مہینہ">
+    <button data-a="mnext" aria-label="اگلا مہینہ">‹</button>
+  </div></div>`;
+}
+
+function viewHome(){
+  const list=monthTx(ui.month);
+  const inc=list.filter(t=>t.type==='inc').reduce((a,t)=>a+t.amount,0);
+  const cats=catTotals(ui.month);
+  const exp=Object.values(cats).reduce((a,b)=>a+b,0);
+  const pk=cats[POCKET]||0;
+  const left=inc-exp;
+  const prev=catTotals(shiftMonth(ui.month,-1));
+  const rows=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  let h=monthBar('گھر کا حساب');
+  h+=`<div class="hero"><div class="lbl">اس مہینے کی بچت</div>
+    <div class="big">${left<0?'−':''}${fmt(Math.abs(left))}</div>
+    <div class="sub"><div>آمدن<b>${fmt(inc)}</b></div><div>کل خرچ<b>${fmt(exp)}</b></div></div></div>`;
+  if(rows.length){
+    h+=`<div class="panel"><div>سب سے زیادہ خرچ <b>${esc(rows[0][0])}</b> پر ہوا: <span class="num out">${fmt(rows[0][1])}</span></div>
+      ${pk>0?`<div class="muted">اس میں جیب خرچ ${fmt(pk)} خود بخود گنا گیا ہے</div>`:''}</div>`;
+  }
+  h+=`<div class="panel"><b>خرچ کہاں ہوا</b>`;
+  if(!rows.length) h+=`<div class="empty">اس مہینے ابھی کوئی خرچ درج نہیں۔<br>نیچے "درج" سے شروع کریں۔</div>`;
+  rows.forEach(([c,v])=>{
+    const pct=exp?Math.round(v/exp*100):0;
+    const lim=state.budgets[c];const over=lim&&v>lim;const p=prev[c]||0;
+    let note='';
+    if(over) note+=`<span class="out">حد سے ${fmt(v-lim)} زیادہ</span> `;
+    else if(lim) note+=`<span class="muted">حد میں باقی ${fmt(lim-v)}</span> `;
+    if(p&&v>p) note+=`<span class="warn">پچھلے مہینے سے ${fmt(v-p)} زیادہ</span>`;
+    else if(p&&v<p) note+=`<span class="in">پچھلے مہینے سے ${fmt(p-v)} کم</span>`;
+    h+=`<div style="padding:8px 0"><div class="row" style="border:0;padding:0"><span>${esc(c)}</span><span class="num">${fmt(v)} <span class="muted">(${pct}%)</span></span></div>
+      <div class="bar"><i class="${over?'over':''}" style="width:${pct}%"></i></div>
+      ${note?`<div style="font-size:14px">${note}</div>`:''}</div>`;
+  });
+  h+=`</div>`;
+  const fs=fundStats();
+  if(fs){
+    const pr=Math.round(fs.paid/state.fund.total*100);
+    h+=`<div class="panel"><b>سرکاری فنڈ</b>
+      <div class="row"><span>اب تک کٹ چکا</span><span class="num in">${fmt(fs.paid)}</span></div>
+      <div class="row"><span>باقی</span><span class="num warn">${fmt(fs.left)}</span></div>
+      <div class="bar"><i class="good" style="width:${pr}%"></i></div>
+      <div class="muted">${fs.monthsLeft>0?`تقریباً ${fs.monthsLeft} مہینے باقی`:'مکمل ہو چکا ✓'}${state.fund.start?'':' · ترتیب میں پہلی کٹوتی کا مہینہ چن لیں'}</div></div>`;
+  }
+  const lt=loanTotals();
+  if(lt.owe>0||lt.lent>0){
+    h+=`<div class="panel"><b>قرض</b>
+      <div class="row"><span>میں نے دینا ہے</span><span class="num out">${fmt(lt.owe)}</span></div>
+      <div class="row"><span>مجھے ملنا ہے</span><span class="num in">${fmt(lt.lent)}</span></div></div>`;
+  }
+  return h;
+}
+
+function viewAdd(){
+  const cats=ui.addType==='exp'?EXP:INC;
+  if(!cats.includes(ui.cat)) ui.cat=cats[0];
+  let h=monthBar('درج کریں');
+  h+=`<div class="seg"><button data-a="type" data-v="exp" class="${ui.addType==='exp'?'on':''}">خرچ</button>
+    <button data-a="type" data-v="inc" class="${ui.addType==='inc'?'on':''}">آمدن</button></div>
+  <div class="panel">
+    <label for="amt">رقم (روپے)</label>
+    <input id="amt" class="amt" type="number" inputmode="numeric" placeholder="0">
+    <label>قسم</label>
+    <div class="chips">${cats.map(c=>`<button data-a="cat" data-v="${esc(c)}" class="${ui.cat===c?'on':''}">${esc(c)}</button>`).join('')}</div>
+    ${ui.addType==='inc'?'<div class="muted" style="margin-top:8px">تنخواہ وہ لکھیں جو ہاتھ میں ملے (فنڈ کی کٹوتی کے بعد)</div>':'<div class="muted" style="margin-top:8px">جیب خرچ یہاں نہ لکھیں، وہ ترتیب سے خود بخود گنا جاتا ہے</div>'}
+    <label for="dt">تاریخ</label>
+    <input id="dt" type="date" value="${today()}">
+    <label for="note">نوٹ (اختیاری)</label>
+    <input id="note" type="text" placeholder="مثلاً: دودھ، آٹا">
+    <button class="btn" data-a="addtx">محفوظ کریں</button>
+  </div>`;
+  const list=monthTx(ui.month).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+  h+=`<h2>اس مہینے کا اندراج</h2><div class="panel">`;
+  if(!list.length) h+=`<div class="empty">ابھی کچھ درج نہیں</div>`;
+  list.forEach(t=>{
+    h+=`<div class="row"><div><div>${esc(t.cat)}${t.note?` <span class="muted">— ${esc(t.note)}</span>`:''}</div><div class="muted">${t.date}</div></div>
+      <div style="text-align:left"><div class="num ${t.type==='inc'?'in':'out'}">${t.type==='inc'?'+':'−'}${fmt(t.amount)}</div>
+      <button class="del" data-a="deltx" data-v="${t.id}">ہٹائیں</button></div></div>`;
+  });
+  return h+`</div>`;
+}
+
+function loanCard(l){
+  const left=loanLeft(l);const open=ui.openLoan===l.id;
+  let h=`<div class="deal ${open?'open':''}"><button class="item" data-a="toggleloan" data-v="${l.id}">
+    <span><b>${esc(l.person)}</b><div class="muted">${fmt(l.amount)} · ${l.date}${l.note?' · '+esc(l.note):''}</div></span>
+    <span style="text-align:left"><span class="num ${left>0?(l.dir==='owe'?'out':'in'):'in'}">${left>0?fmt(left):'ادا ✓'}</span><div class="muted">${open?'بند کریں':'کھولیں'}</div></span></button>`;
+  if(open){
+    const pays=(l.pays||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+    h+=`<div style="margin-top:8px">
+      <div class="row"><span>کل رقم</span><span class="num">${fmt(l.amount)}</span></div>
+      <div class="row"><span>${l.dir==='owe'?'اب تک واپس کیا':'اب تک وصول ہوا'}</span><span class="num in">${fmt(l.amount-left)}</span></div>
+      <div class="row"><span>باقی</span><span class="num warn">${fmt(Math.max(0,left))}</span></div>
+      <div class="grid2">
+        <div><label>${l.dir==='owe'?'واپس کی رقم':'وصول ہوئی رقم'}</label><input id="lp-${l.id}" type="number" inputmode="numeric" placeholder="0" style="direction:ltr;text-align:right"></div>
+        <div><label>تاریخ</label><input id="ld-${l.id}" type="date" value="${today()}"></div>
+      </div>
+      <button class="btn" data-a="addlpay" data-v="${l.id}">درج کریں</button>`;
+    if(pays.length){
+      h+=`<div style="margin-top:10px"><b>ادائیگیاں</b>`;
+      pays.forEach(p=>{h+=`<div class="row"><div><span class="num in">${fmt(p.amount)}</span><div class="muted">${p.date}</div></div>
+        <button class="del" data-a="dellpay" data-id="${l.id}" data-v="${p.id}">ہٹائیں</button></div>`});
+      h+=`</div>`;
+    }
+    h+=`<button class="del" data-a="delloan" data-v="${l.id}" style="margin-top:8px">${ui.confirm===l.id?'دوبارہ دبائیں، حذف ہو جائے گا':'یہ قرض حذف کریں'}</button></div>`;
+  }
+  return h+`</div>`;
+}
+function viewLoans(){
+  const lt=loanTotals();
+  let h=`<div class="top"><h1>قرض</h1></div>
+  <div class="panel">
+    <div class="row"><span>میں نے دینا ہے</span><span class="num out">${fmt(lt.owe)}</span></div>
+    <div class="row"><span>مجھے ملنا ہے</span><span class="num in">${fmt(lt.lent)}</span></div></div>
+  <div class="seg"><button data-a="ldir" data-v="owe" class="${ui.loanDir==='owe'?'on':''}">میں نے لیا</button>
+    <button data-a="ldir" data-v="lent" class="${ui.loanDir==='lent'?'on':''}">میں نے دیا</button></div>
+  <div class="panel">
+    <label for="lpn">${ui.loanDir==='owe'?'کس سے لیا':'کس کو دیا'}</label>
+    <input id="lpn" type="text" placeholder="نام">
+    <label for="lam">رقم / چیز کی قیمت</label>
+    <input id="lam" class="amt" type="number" inputmode="numeric" placeholder="0">
+    <label for="ldt">تاریخ</label><input id="ldt" type="date" value="${today()}">
+    <label for="lnt">نوٹ (اختیاری)</label><input id="lnt" type="text" placeholder="مثلاً: نقد، یا کوئی چیز">
+    <button class="btn" data-a="addloan">شامل کریں</button></div>`;
+  const owe=state.loans.filter(l=>l.dir==='owe'),lent=state.loans.filter(l=>l.dir==='lent');
+  h+=`<h2>میں نے دینا ہے</h2>${owe.length?owe.map(loanCard).join(''):'<div class="panel"><div class="empty">کوئی نہیں</div></div>'}`;
+  h+=`<h2>مجھے ملنا ہے</h2>${lent.length?lent.map(loanCard).join(''):'<div class="panel"><div class="empty">کوئی نہیں</div></div>'}`;
+  return h;
+}
+
+function viewSettings(){
+  const yr=new Date().getFullYear();
+  const f=state.fund;const [fy,fm]=f.start?f.start.split('-'):[String(yr),''];
+  let h=`<div class="top"><h1>ترتیب</h1></div>
+  <div class="panel"><b>جیب خرچ (روزانہ)</b>
+    <div class="muted" style="margin:4px 0 8px">ہر فرد کا روزانہ کا جیب خرچ لکھیں۔ مہینے کا حساب خود بخود بنے گا۔ رقم بدلیں تو نئی رقم آج سے لاگو ہوگی، پرانے مہینے نہیں بدلتے۔</div>`;
+  if(!state.people.length) h+=`<div class="empty">ابھی کوئی نام نہیں</div>`;
+  state.people.forEach(p=>{
+    h+=`<div class="pr"><input data-pn="${p.id}" value="${esc(p.name)}" aria-label="نام">
+      <input data-pd="${p.id}" type="number" inputmode="numeric" placeholder="روزانہ" value="${curRate(p)||''}" style="direction:ltr;text-align:right" aria-label="روزانہ رقم">
+      <button class="del" data-a="delperson" data-v="${p.id}">ہٹائیں</button></div>`;
+  });
+  h+=`<div class="grid2" style="margin-top:6px"><input id="npn" type="text" placeholder="نیا نام"><input id="npd" type="number" inputmode="numeric" placeholder="روزانہ رقم" style="direction:ltr;text-align:right"></div>
+    <button class="btn ghost" data-a="addperson">شامل کریں</button>
+    ${state.people.length?'':'<button class="btn ghost" data-a="quickfam">گھر والوں کے نام ایک ساتھ شامل کریں</button>'}</div>
+  <div class="panel"><b>سرکاری فنڈ</b>
+    <div class="muted" style="margin:4px 0 8px">تنخواہ سے کٹنے والا فنڈ۔ ہر مہینے کی کٹوتی خود بخود گنی جاتی ہے۔</div>
+    <div class="grid2">
+      <div><label>کل رقم</label><input data-fund="total" type="number" inputmode="numeric" placeholder="0" value="${f.total||''}"></div>
+      <div><label>ماہانہ کٹوتی</label><input data-fund="monthly" type="number" inputmode="numeric" placeholder="0" value="${f.monthly||''}"></div>
+    </div>
+    <label>پہلی کٹوتی کا مہینہ</label>
+    <div class="grid2">
+      <select id="fsm" data-fs="1"><option value="">مہینہ چنیں</option>${MONTHS.map((n,i)=>{const v=String(i+1).padStart(2,'0');return `<option value="${v}" ${fm===v?'selected':''}>${n}</option>`}).join('')}</select>
+      <select id="fsy" data-fs="1">${[yr-2,yr-1,yr,yr+1].map(y=>`<option value="${y}" ${String(y)===String(fy)?'selected':''}>${y}</option>`).join('')}</select>
+    </div></div>
+  <div class="panel"><b>ماہانہ حدیں</b>
+    <div class="muted" style="margin:4px 0 6px">ہر قسم کی ماہانہ حد لکھیں۔ حد سے اوپر جائے تو خلاصے میں سرخ نشان آئے گا۔</div>`;
+  EXP.concat([POCKET]).forEach(c=>{
+    h+=`<div class="row"><label style="margin:0;color:var(--ink);flex:1">${esc(c)}</label>
+      <input data-budget="${esc(c)}" type="number" inputmode="numeric" placeholder="—" value="${state.budgets[c]||''}" style="width:120px;direction:ltr;text-align:right" aria-label="${esc(c)} کی حد"></div>`;
+  });
+  return h+`</div>`;
+}
+
+function viewBackup(){
+  return `<div class="top"><h1>ڈیٹا کی نقل</h1></div>
+  <div class="panel"><b>نقل بنائیں</b>
+    <div class="muted" style="margin:4px 0 8px">نیچے سارا حساب لکھا ہے۔ "کاپی کریں" دبا کر واٹس ایپ پر اپنے آپ کو بھیج کر رکھ لیں۔</div>
+    <textarea id="bk" readonly rows="6">${esc(JSON.stringify(state))}</textarea>
+    <button class="btn" data-a="copybk">کاپی کریں</button></div>
+  <div class="panel"><b>نقل واپس لائیں</b>
+    <div class="muted" style="margin:4px 0 8px">محفوظ کی ہوئی نقل یہاں چسپاں کریں۔ موجودہ حساب کی جگہ وہ آ جائے گا۔</div>
+    <textarea id="rs" rows="6" placeholder="یہاں چسپاں کریں"></textarea>
+    <button class="btn ghost" data-a="restore">${ui.confirm==='restore'?'دوبارہ دبائیں، موجودہ حساب بدل جائے گا':'واپس لائیں'}</button></div>`;
+}
+
+function render(){
+  const y=window.scrollY;
+  const v={home:viewHome,add:viewAdd,loans:viewLoans,set:viewSettings,backup:viewBackup}[ui.tab]();
+  document.getElementById('app').innerHTML=v;
+  const tabs=[['home','◔','خلاصہ'],['add','＋','درج'],['loans','⇄','قرض'],['set','⚙','ترتیب'],['backup','⤓','نقل']];
+  document.getElementById('nav').innerHTML=tabs.map(([k,i,l])=>`<button data-tab="${k}" class="${ui.tab===k?'on':''}"><span class="ic">${i}</span>${l}</button>`).join('');
+  window.scrollTo(0,y);
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const tb=e.target.closest('[data-tab]');
+  if(tb){ui.tab=tb.dataset.tab;ui.confirm=null;render();window.scrollTo(0,0);return}
+  const el=e.target.closest('[data-a]');if(!el)return;
+  const a=el.dataset.a,v=el.dataset.v;
+  if(a==='mprev'){ui.month=shiftMonth(ui.month,-1);render()}
+  else if(a==='mnext'){ui.month=shiftMonth(ui.month,1);render()}
+  else if(a==='type'){ui.addType=v;ui.cat=(v==='exp'?EXP:INC)[0];render()}
+  else if(a==='cat'){ui.cat=v;render()}
+  else if(a==='addtx'){
+    const amt=Number(document.getElementById('amt').value);
+    const dt=document.getElementById('dt').value||today();
+    const note=document.getElementById('note').value.trim();
+    if(!(amt>0)){toast('پہلے رقم لکھیں');document.getElementById('amt').focus();return}
+    state.tx.push({id:uid(),type:ui.addType,cat:ui.cat,amount:amt,date:dt,note});
+    ui.month=dt.slice(0,7);save();render();toast('محفوظ ہو گیا');
+  }
+  else if(a==='deltx'){
+    const i=state.tx.findIndex(t=>t.id===v);
+    if(i>=0){const x=state.tx.splice(i,1)[0];save();render();toast('اندراج ہٹا دیا','واپس',()=>{state.tx.push(x);save();render()})}
+  }
+  else if(a==='ldir'){ui.loanDir=v;render()}
+  else if(a==='addloan'){
+    const person=document.getElementById('lpn').value.trim();
+    const amount=Number(document.getElementById('lam').value);
+    const date=document.getElementById('ldt').value||today();
+    const note=document.getElementById('lnt').value.trim();
+    if(!person){toast('نام لکھیں');return}
+    if(!(amount>0)){toast('رقم لکھیں');return}
+    const l={id:uid(),dir:ui.loanDir,person,amount,date,note,pays:[]};
+    state.loans.push(l);ui.openLoan=l.id;save();render();toast('شامل ہو گیا');
+  }
+  else if(a==='toggleloan'){ui.openLoan=ui.openLoan===v?null:v;ui.confirm=null;render()}
+  else if(a==='addlpay'){
+    const l=state.loans.find(x=>x.id===v);
+    const amt=Number(document.getElementById('lp-'+v).value);
+    const dt=document.getElementById('ld-'+v).value||today();
+    if(!(amt>0)){toast('رقم لکھیں');return}
+    l.pays=l.pays||[];l.pays.push({id:uid(),amount:amt,date:dt});save();render();toast('درج ہو گیا');
+  }
+  else if(a==='dellpay'){
+    const l=state.loans.find(x=>x.id===el.dataset.id);
+    const i=l.pays.findIndex(p=>p.id===v);const x=l.pays.splice(i,1)[0];save();render();
+    toast('ہٹا دیا','واپس',()=>{l.pays.push(x);save();render()});
+  }
+  else if(a==='delloan'){
+    if(ui.confirm===v){
+      const i=state.loans.findIndex(l=>l.id===v);const x=state.loans.splice(i,1)[0];ui.confirm=null;ui.openLoan=null;save();render();
+      toast('قرض حذف ہو گیا','واپس',()=>{state.loans.splice(i,0,x);save();render()});
+    }else{ui.confirm=v;render()}
+  }
+  else if(a==='addperson'){
+    const n=document.getElementById('npn').value.trim();const d=Number(document.getElementById('npd').value)||0;
+    if(!n){toast('نام لکھیں');return}
+    state.people.push({id:uid(),name:n,rates:[{from:'2000-01-01',daily:d}]});save();render();
+  }
+  else if(a==='quickfam'){
+    ['بڑا بیٹا','دوسرا بیٹا','تیسرا بیٹا','چوتھا بیٹا','بیگم'].forEach(n=>state.people.push({id:uid(),name:n,rates:[{from:'2000-01-01',daily:0}]}));
+    save();render();toast('نام شامل ہو گئے، ہر ایک کی روزانہ رقم لکھیں');
+  }
+  else if(a==='delperson'){
+    const i=state.people.findIndex(p=>p.id===v);
+    if(i>=0){const x=state.people.splice(i,1)[0];save();render();toast('ہٹا دیا','واپس',()=>{state.people.splice(i,0,x);save();render()})}
+  }
+  else if(a==='copybk'){
+    const ta=document.getElementById('bk');ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);
+    let ok=false;try{ok=document.execCommand('copy')}catch(err){}
+    if(!ok&&navigator.clipboard){navigator.clipboard.writeText(ta.value).then(()=>toast('کاپی ہو گیا'),()=>toast('متن منتخب ہے، خود کاپی کریں'));return}
+    toast(ok?'کاپی ہو گیا':'متن منتخب ہے، خود کاپی کریں');
+  }
+  else if(a==='restore'){
+    const txt=document.getElementById('rs').value.trim();
+    if(!txt){toast('پہلے نقل چسپاں کریں');return}
+    let obj=null;try{obj=JSON.parse(txt)}catch(err){}
+    if(!obj||!Array.isArray(obj.tx)){toast('یہ درست نقل نہیں لگتی');return}
+    if(ui.confirm!=='restore'){ui.confirm='restore';render();document.getElementById('rs').value=txt;return}
+    state=Object.assign(defaultState(),obj);ui.confirm=null;ui.tab='home';save();render();toast('حساب واپس آ گیا');
+  }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.a==='mset'&&t.value){ui.month=t.value;render();return}
+  if(t.dataset.pn){const p=state.people.find(x=>x.id===t.dataset.pn);p.name=t.value.trim()||p.name;save();render();return}
+  if(t.dataset.pd){
+    const p=state.people.find(x=>x.id===t.dataset.pd);const v=Math.max(0,Number(t.value)||0);
+    if(v!==curRate(p)){
+      if(p.rates.length===1&&p.rates[0].daily===0) p.rates[0].daily=v;
+      else{
+        const last=p.rates[p.rates.length-1];
+        if(last.from===today()) last.daily=v; else p.rates.push({from:today(),daily:v});
+        toast('نئی رقم آج سے لاگو ہے');
+      }
+      save();render();
+    }
+    return;
+  }
+  if(t.dataset.fund){state.fund[t.dataset.fund]=Math.max(0,Number(t.value)||0);save();render();return}
+  if(t.dataset.fs){
+    const m=document.getElementById('fsm').value,y=document.getElementById('fsy').value;
+    state.fund.start=m?(y+'-'+m):'';save();render();return;
+  }
+  if(t.dataset.budget){
+    const v=Number(t.value);
+    if(v>0)state.budgets[t.dataset.budget]=v;else delete state.budgets[t.dataset.budget];
+    save();toast('حد محفوظ');
+  }
+});
+load();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
